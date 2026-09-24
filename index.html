@@ -392,10 +392,14 @@ function finishScan(){
 }
 
 function manualDemo(){
- state.count=1;
- state.eids=["UK012345670001"];
- message("1 demo tag entered manually.");
- setTimeout(()=>show("destination"),600);
+  state.count=5;
+  state.eids=[
+    "UK012345670001",
+    "UK012345670002",
+    "UK012345670003"
+  ];
+  message("3 demo tags entered for 5 animals.");
+  setTimeout(()=>show("destination"),600);
 }
 
 function flockDemo(){
