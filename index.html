@@ -222,7 +222,7 @@ p{color:var(--muted);line-height:1.45}
 <b>Higher Farm → <span id="passDest"></span></b>
 <p><b id="passAnimals"></b><br>Departure: 24 Sep 2026</p>
 <div class="good">✓ Show this movement pass at the destination. QR shown for prototype demonstration.</div>
-<button class="primary" onclick="message('Printable movement document will be added in the Documents upgrade.')">View / Print Document</button>
+<button class="primary" onclick="printMovement()">View / Print Document</button>
 <button class="secondary" onclick="completeMovement()">Complete movement</button>
 </section>
 
@@ -511,6 +511,71 @@ function escapeText(v){
  const d=document.createElement("div");
  d.textContent=v||"";
  return d.innerHTML;
+}
+
+ function printMovement(){
+  const m = state;
+
+  const eids = (m.eids && m.eids.length)
+    ? m.eids.map((eid, i) => `<tr><td>${i + 1}</td><td>${escapeText(eid)}</td></tr>`).join("")
+    : `<tr><td colspan="2">No individual EID records</td></tr>`;
+
+  const w = window.open("", "_blank");
+
+  w.document.write(`
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>Movement ${escapeText(m.ref || "")}</title>
+      <style>
+        body{font-family:Arial,sans-serif;color:#142033;margin:40px;line-height:1.4}
+        h1{margin-bottom:5px}
+        h2{margin-top:30px;border-bottom:2px solid #17783d;padding-bottom:6px}
+        .ref{font-size:22px;font-weight:bold;color:#17783d}
+        .box{border:1px solid #ccd5d0;border-radius:10px;padding:16px;margin:12px 0}
+        table{width:100%;border-collapse:collapse;margin-top:10px}
+        th,td{text-align:left;padding:8px;border-bottom:1px solid #ddd}
+        .print{margin-top:30px;padding:12px 24px;font-size:16px}
+        @media print{.print{display:none}}
+      </style>
+    </head>
+    <body>
+      <h1>Livestock Movement Document</h1>
+      <div class="ref">${escapeText(m.ref || "")}</div>
+
+      <h2>Movement details</h2>
+      <div class="box">
+        <b>Departure:</b> Higher Farm<br>
+        <b>Departure CPH:</b> 12/345/6789<br>
+        <b>Destination:</b> ${escapeText(m.destination || "")}<br>
+        <b>Destination CPH:</b> ${escapeText(m.destinationCPH || "")}<br>
+        <b>Date:</b> ${escapeText(m.date || "24 Sep 2026")}
+      </div>
+
+      <h2>Animals</h2>
+      <div class="box">
+        <b>Species:</b> ${escapeText(m.species || "")}<br>
+        <b>Number of animals:</b> ${escapeText(m.count || "")}
+      </div>
+
+      <h2>Animal identification</h2>
+      <table>
+        <tr><th>No.</th><th>EID</th></tr>
+        ${eids}
+      </table>
+
+      <h2>Transport</h2>
+      <div class="box">
+        <b>Transporter:</b> ${escapeText(m.transporter || "")}<br>
+        <b>Vehicle:</b> ${escapeText(m.vehicle || "")}
+      </div>
+
+      <button class="print" onclick="window.print()">Print / Save as PDF</button>
+    </body>
+    </html>
+  `);
+
+  w.document.close();
 }
 
 loadMovements();
