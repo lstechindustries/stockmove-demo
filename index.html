@@ -423,7 +423,7 @@ function review(){
  state.destinationCPH=destCPH.value;
  state.vehicle=vehicle.value;
  state.transporter=document.querySelector('input[name="trans"]:checked').value;
- if(!state.count){state.count=5}
+ 
  rAnimals.textContent=state.count+" "+state.species.toLowerCase();
  rDestination.textContent=state.destination;
  rCPH.textContent="CPH: "+state.destinationCPH;
@@ -433,10 +433,27 @@ function review(){
 }
 
 function createMovement(){
- passRef.textContent=state.ref;
- passDest.textContent=state.destination;
- passAnimals.textContent=state.count+" "+state.species.toLowerCase();
- show("pass");
+
+  if(
+    (state.species === "Sheep" || state.species === "Cattle") &&
+    state.eids.length !== state.count
+  ){
+    message(
+      "You have " + state.count +
+      " animals but " + state.eids.length +
+      " animal IDs. Please add an ID for every animal."
+    );
+
+    setTimeout(() => show("sheep"), 1800);
+    return;
+  }
+
+  passRef.textContent = state.ref;
+  passDest.textContent = state.destination;
+  passAnimals.textContent =
+    state.count + " " + state.species.toLowerCase();
+
+  show("pass");
 }
 
 function completeMovement(){if((state.species==="Sheep" || state.species==="Cattle") && state.eids.length !== state.count){
