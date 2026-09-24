@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#176b3a">
+<title>StockMove Demo</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Arial,Helvetica,sans-serif;
+  background:#eef2ee;
+  color:#142033;
+}
+.app{
+  max-width:430px;
+  min-height:100vh;
+  margin:auto;
+  background:#f8faf8;
+  position:relative;
+  padding-bottom:85px;
+}
+header{
+  background:white;
+  padding:18px 20px;
+  border-bottom:1px solid #e4e7e4;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.logo{font-size:25px;font-weight:800;color:#176b3a}
+.small{font-size:13px;color:#6b7280}
+main{padding:22px 18px}
+h1{font-size:30px;margin:7px 0 8px}
+h2{font-size:21px;margin:22px 0 14px}
+h3{margin:4px 0 7px}
+p{color:#667085;line-height:1.45}
+
+.card{
+  background:white;
+  border:1px solid #dfe4df;
+  border-radius:16px;
+  padding:17px;
+  margin:12px 0;
+  box-shadow:0 2px 5px rgba(0,0,0,.04);
+}
+.clickable{cursor:pointer}
+.clickable:hover{border-color:#21823e}
+.selected{
+  border:2px solid #21823e;
+  background:#eff9f1;
+}
+.row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+}
+.icon{font-size:34px}
+.green{color:#167638}
+.badge{
+  background:#dcfce7;
+  color:#166534;
+  padding:6px 10px;
+  border-radius:20px;
+  font-size:12px;
+  font-weight:bold;
+}
+button{
+  border:0;
+  border-radius:12px;
+  padding:15px 17px;
+  font-size:16px;
+  font-weight:bold;
+  cursor:pointer;
+}
+.primary{
+  width:100%;
+  background:#17843b;
+  color:white;
+}
+.secondary{
+  background:#edf0ed;
+  color:#142033;
+}
+.buttons{
+  display:grid;
+  grid-template-columns:1fr 1.6fr;
+  gap:10px;
+  margin-top:22px;
+}
+.progress{
+  display:flex;
+  justify-content:space-between;
+  margin:8px 0 22px;
+}
+.dot{
+  width:29px;height:29px;
+  border-radius:50%;
+  background:#e5e7eb;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:12px;
+  font-weight:bold;
+}
+.dot.on{background:#17843b;color:white}
+.option{
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+.option span:first-child{font-size:27px}
+.scanCircle{
+  width:205px;height:205px;
+  border:12px solid #d8efdd;
+  border-radius:50%;
+  margin:30px auto;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+}
+.scanNumber{
+  font-size:45px;
+  font-weight:800;
+  color:#176b3a;
+}
+input{
+  width:100%;
+  padding:14px;
+  border:1px solid #ccd3cc;
+  border-radius:10px;
+  font-size:16px;
+  margin-top:7px;
+}
+.success{
+  width:95px;height:95px;
+  background:#20a34a;
+  color:white;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:55px;
+  margin:28px auto;
+}
+.qr{
+  width:155px;height:155px;
+  margin:20px auto;
+  background:
+    repeating-linear-gradient(45deg,#111 0 8px,#fff 8px 16px),
+    repeating-linear-gradient(-45deg,transparent 0 10px,#111 10px 17px);
+  border:12px solid white;
+  outline:2px solid #111;
+}
+.bottom{
+  position:fixed;
+  bottom:0;
+  left:50%;
+  transform:translateX(-50%);
+  max-width:430px;
+  width:100%;
+  background:white;
+  border-top:1px solid #ddd;
+  display:flex;
+  justify-content:space-around;
+  padding:12px 5px;
+  font-size:12px;
+}
+.nav{text-align:center;cursor:pointer}
+.nav b{display:block;font-size:20px}
+.hidden{display:none}
+</style>
+</head>
+
+<body>
+<div class="app">
+
+<header>
+  <div>
+    <div class="logo">🐮 StockMove</div>
+    <div class="small">Livestock movements made simple</div>
+  </div>
+  <div class="small">Higher Farm</div>
+</header>
+
+<main id="screen"></main>
+
+<div class="bottom">
+  <div class="nav" onclick="home()"><b>⌂</b>Home</div>
+  <div class="nav" onclick="sheep()"><b>⇄</b>Movements</div>
+  <div class="nav" onclick="sheep()"><b>🐑</b>Livestock</div>
+  <div class="nav"><b>•••</b>More</div>
+</div>
+
+</div>
+
+<script>
+const screen=document.getElementById("screen");
+
+let data={
+ species:"Sheep",
+ count:0,
+ destination:"Livestock Market",
+ transporter:"Myself",
+ vehicle:"AB12 CDE",
+ movement:"SM-"+Math.floor(100000+Math.random()*899999)
+};
+
+function progress(n){
+ return `<div class="progress">
+ ${[1,2,3,4,5].map(x=>`<div class="dot ${x<=n?'on':''}">${x}</div>`).join("")}
+ </div>`;
+}
+
+function home(){
+ screen.innerHTML=`
+ <p class="green"><b>Higher Farm</b></p>
+ <h1>Good morning 👋</h1>
+ <p>What would you like to do today?</p>
+
+ <h2>My Livestock</h2>
+
+ <div class="card clickable">
+   <div class="icon">🐄</div>
+   <h3>Cattle</h3><p>Manage cattle and movements</p>
+ </div>
+
+ <div class="card clickable" onclick="sheep()">
+   <div class="icon">🐑</div>
+   <h3>Sheep & Goats</h3>
+   <p>Manage your flock and EID records</p>
+   <b class="green">View flock →</b>
+ </div>
+
+ <div class="card clickable">
+   <div class="icon">🐖</div>
+   <h3>Pigs</h3><p>Manage pigs and movements</p>
+ </div>
+
+ <h2>Quick actions</h2>
+ <button class="primary" onclick="newMovement()">+ New Movement</button>
+ `;
+}
+
+function sheep(){
+ screen.innerHTML=`
+ <p class="green clickable" onclick="home()">← Back</p>
+ <h1>Sheep & Goats</h1>
+
+ <div class="card">
+   <div class="row">
+     <div>
+       <div class="small">SHEEP ON HOLDING</div>
+       <h1>423</h1>
+     </div>
+     <div class="icon">🐑</div>
+   </div>
+ </div>
+
+ <div class="card clickable" onclick="newMovement()">
+   <div class="option"><span>🚚</span><div><b>Move sheep</b><p>Create a livestock movement</p></div></div>
+ </div>
+
+ <div class="card"><div class="option"><span>➕</span><b>Add / register sheep</b></div></div>
+ <div class="card"><div class="option"><span>🐑</span><b>View flock</b></div></div>
+ <div class="card"><div class="option"><span>🕘</span><b>Movement history</b></div></div>
+ <div class="card"><div class="option"><span>📄</span><b>Documents</b></div></div>
+ `;
+}
+
+function newMovement(){
+ screen.innerHTML=`
+ ${progress(1)}
+ <div class="small green"><b>NEW LIVESTOCK MOVEMENT</b></div>
+ <h1>What are you moving?</h1>
+ <p>Select the species for this movement.</p>
+
+ <div id="sheepOption" class="card selected clickable" onclick="selectSpecies('Sheep')">
+   <div class="row"><div><div class="icon">🐑</div><h3>Sheep</h3></div><span class="badge">Selected</span></div>
+ </div>
+
+ <div id="goatOption" class="card clickable" onclick="selectSpecies('Goats')">
+   <div class="icon">🐐</div><h3>Goats</h3>
+ </div>
+
+ <button class="primary" onclick="identify()">Continue</button>
+ `;
+}
+
+function selectSpecies(s){
+ data.species=s;
+ document.getElementById("sheepOption").className="card clickable "+(s==="Sheep"?"selected":"");
+ document.getElementById("goatOption").className="card clickable "+(s==="Goats"?"selected":"");
+}
+
+function identify(){
+ screen.innerHTML=`
+ ${progress(2)}
+ <h1>Select Animals</h1>
+ <p>How would you like to identify the animals?</p>
+
+ <div class="card clickable" onclick="scanner()">
+  <div class="option"><span>📡</span><div><b>Scan EID tags</b><p>Use a compatible EID reader</p></div></div>
+ </div>
+
+ <div class="card clickable" onclick="manual()">
+  <div class="option"><span>⌨️</span><div><b>Enter tag manually</b><p>Enter individual identification</p></div></div>
+ </div>
+
+ <div class="card">
+  <div class="option"><span>☷</span><div><b>Select from flock</b><p>Choose from existing records</p></div></div>
+ </div>
+ `;
+}
+
+function scanner(){
+ data.count=0;
+ screen.innerHTML=`
+ ${progress(2)}
+ <div class="card">
+  <div class="green"><b>🔵 EID Reader Connected</b></div>
+  <div class="small">Demo reader</div>
+ </div>
+
+ <div class="scanCircle">
+   <div><div>📡</div><b>Scanning...</b><div id="number" class="scanNumber">0</div><div>${data.species.toLowerCase()} scanned</div></div>
+ </div>
+
+ <button class="primary" onclick="scanFive()">Simulate 5 EID scans</button>
+ <div style="height:10px"></div>
+ <button class="secondary" style="width:100%" onclick="destination()">Finish Scanning</button>
+ `;
+}
+
+function scanFive(){
+ data.count+=5;
+ document.getElementById("number").innerText=data.count;
+}
+
+function manual(){
+ screen.innerHTML=`
+ ${progress(2)}
+ <h1>Enter tag manually</h1>
+ <p>Enter an EID number below.</p>
+ <input id="tag" placeholder="UK 0 123456 00001">
+ <button style="margin-top:15px" class="primary" onclick="manualAdd()">Add animal</button>
+ `;
+}
+
+function manualAdd(){
+ data.count++;
+ scanner();
+ data.count=1;
+ document.getElementById("number").innerText=1;
+}
+
+function destination(){
+ if(data.count===0)data.count=85;
+ screen.innerHTML=`
+ ${progress(3)}
+ <h1>Destination</h1>
+ <p>Where are the animals going?</p>
+
+ ${destCard("🏛️","Livestock Market")}
+ ${destCard("🏠","Another Farm")}
+ ${destCard("🏭","Slaughterhouse")}
+ ${destCard("🏆","Show")}
+ ${destCard("📍","Other")}
+
+ <div class="buttons">
+ <button class="secondary" onclick="identify()">Back</button>
+ <button class="primary" onclick="transport()">Continue</button>
+ </div>
+ `;
+}
+
+function destCard(icon,name){
+ return `<div class="card clickable ${data.destination===name?'selected':''}" onclick="data.destination='${name}';destination()">
+ <div class="option"><span>${icon}</span><b>${name}</b></div></div>`;
+}
+
+function transport(){
+ screen.innerHTML=`
+ ${progress(4)}
+ <h1>Transport Details</h1>
+ <p>Who is transporting the animals?</p>
+
+ <div class="card selected"><b>● Myself (Departure Keeper)</b></div>
+ <div class="card">○ Receiving Keeper</div>
+ <div class="card">○ Haulier / Transport Company</div>
+
+ <label><b>Vehicle registration</b></label>
+ <input id="vehicle" value="${data.vehicle}">
+
+ <label><br><b>Expected journey duration</b></label>
+ <input value="01:15">
+
+ <div class="buttons">
+ <button class="secondary" onclick="destination()">Back</button>
+ <button class="primary" onclick="saveTransport()">Continue</button>
+ </div>
+ `;
+}
+
+function saveTransport(){
+ data.vehicle=document.getElementById("vehicle").value;
+ review();
+}
+
+function review(){
+ screen.innerHTML=`
+ ${progress(5)}
+ <h1>Review Movement</h1>
+ <p>Check your details before creating the movement.</p>
+
+ <div class="card">
+   <p><b>🐑 Animals</b><br>${data.count} ${data.species.toLowerCase()}</p>
+   <hr>
+   <p><b>🏠 From</b><br>Higher Farm<br><span class="small">CPH: 12/345/6789</span></p>
+   <hr>
+   <p><b>🏛️ To</b><br>${data.destination}</p>
+   <hr>
+   <p><b>🚚 Transport</b><br>Myself<br>Vehicle: ${data.vehicle}</p>
+ </div>
+
+ <div class="card selected green"><b>✓ Everything looks good</b><br>
+ <span class="small">Your movement is ready to create.</span></div>
+
+ <div class="buttons">
+ <button class="secondary" onclick="transport()">Back</button>
+ <button class="primary" onclick="movementPass()">Create Movement</button>
+ </div>
+ `;
+}
+
+function movementPass(){
+ screen.innerHTML=`
+ <div class="success">✓</div>
+ <div style="text-align:center">
+ <h1>Movement created</h1>
+ <h2>${data.movement}</h2>
+ <div class="qr"></div>
+ <p><b>Higher Farm → ${data.destination}</b><br>${data.count} ${data.species.toLowerCase()}</p>
+ </div>
+
+ <div class="card selected">
+ <b>✓ Show this QR code at the destination.</b>
+ <p>For this prototype, this demonstrates the digital movement pass.</p>
+ </div>
+
+ <button class="primary" onclick="complete()">Complete movement</button>
+ `;
+}
+
+function complete(){
+ screen.innerHTML=`
+ <div style="text-align:center">
+ <div class="success">✓</div>
+ <h1>Movement complete</h1>
+ <p>Your records have been saved.</p>
+ </div>
+
+ <div class="card">
+ <p>✅ Movement record created</p>
+ <p>✅ Livestock record updated</p>
+ <p>✅ Holding register updated</p>
+ <p>✅ Digital document saved</p>
+ </div>
+
+ <button class="primary" onclick="home()">Back to Home</button>
+ `;
+}
+
+home();
+</script>
+</body>
+</html>
