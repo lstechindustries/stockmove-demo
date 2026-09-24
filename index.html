@@ -435,7 +435,10 @@ function createMovement(){
  show("pass");
 }
 
-function completeMovement(){
+function completeMovement(){if((state.species==="Sheep" || state.species==="Cattle") && state.eids.length !== state.count){
+  message("You have "+state.count+" animals but "+state.eids.length+" animal IDs. Please add an ID for every animal before completing the movement.");
+  return;
+}
  state.complete=true;
 
  const existing=movements.findIndex(m=>m.ref===state.ref);
