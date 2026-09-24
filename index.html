@@ -392,14 +392,28 @@ function finishScan(){
 }
 
 function manualDemo(){
-  state.count=5;
-  state.eids=[
+  if (!state.count) state.count = 5;
+
+  const demoEids = [
     "UK012345670001",
     "UK012345670002",
-    "UK012345670003"
+    "UK012345670003",
+    "UK012345670004",
+    "UK012345670005"
   ];
-  message("3 demo tags entered for 5 animals.");
-  setTimeout(()=>show("destination"),600);
+
+  if (!state.eids) state.eids = [];
+
+  if (state.eids.length < state.count) {
+    state.eids.push(demoEids[state.eids.length]);
+  }
+
+  message(
+    state.eids.length + " of " + state.count +
+    " animal IDs entered."
+  );
+
+  setTimeout(() => show("destination"), 600);
 }
 
 function flockDemo(){
