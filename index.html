@@ -1,1366 +1,519 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#176b3a" />
-  <title>StockMove Demo</title>
-
-  <style>
-    * {
-      box-sizing: border-box;
-    }
-
-    :root {
-      --green: #17783d;
-      --green-dark: #0f5f31;
-      --green-light: #e9f6ed;
-      --green-pale: #f3faf5;
-      --text: #142033;
-      --muted: #667085;
-      --border: #dfe4e1;
-      --background: #f4f7f4;
-      --white: #ffffff;
-    }
-
-    body {
-      margin: 0;
-      font-family: Arial, Helvetica, sans-serif;
-      background: #e9eeea;
-      color: var(--text);
-    }
-
-    button,
-    input {
-      font: inherit;
-    }
-
-    button {
-      cursor: pointer;
-    }
-
-    .app {
-      width: 100%;
-      max-width: 430px;
-      min-height: 100vh;
-      margin: 0 auto;
-      background: #f8faf8;
-      position: relative;
-      padding-bottom: 88px;
-      overflow-x: hidden;
-      box-shadow: 0 0 30px rgba(0,0,0,.08);
-    }
-
-    .screen {
-      display: none;
-      min-height: calc(100vh - 88px);
-      padding: 22px 20px 30px;
-    }
-
-    .screen.active {
-      display: block;
-    }
-
-    .brand {
-      font-size: 30px;
-      font-weight: 800;
-      color: var(--green-dark);
-      margin-bottom: 3px;
-    }
-
-    .brand span {
-      color: var(--green);
-    }
-
-    .tagline {
-      color: var(--muted);
-      font-size: 13px;
-      margin-bottom: 28px;
-    }
-
-    h1 {
-      margin: 8px 0 12px;
-      font-size: 34px;
-      line-height: 1.08;
-      letter-spacing: -1px;
-    }
-
-    h2 {
-      margin: 5px 0 10px;
-      font-size: 26px;
-    }
-
-    p {
-      color: var(--muted);
-      line-height: 1.45;
-    }
-
-    .small {
-      font-size: 13px;
-    }
-
-    .green {
-      color: var(--green);
-    }
-
-    .eyebrow {
-      color: var(--green);
-      font-size: 13px;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: .5px;
-      margin-top: 18px;
-    }
-
-    .back {
-      border: 0;
-      background: transparent;
-      color: var(--green-dark);
-      padding: 0;
-      font-weight: 700;
-      margin-bottom: 18px;
-    }
-
-    .hero {
-      background: linear-gradient(135deg, #dbeedc, #f8fbf8);
-      border-radius: 24px;
-      padding: 24px;
-      margin-bottom: 20px;
-      border: 1px solid #d8e4da;
-    }
-
-    .hero h1 {
-      font-size: 31px;
-      margin-top: 0;
-    }
-
-    .holding {
-      font-weight: 700;
-      margin-top: 14px;
-    }
-
-    .cph {
-      color: var(--green-dark);
-      font-size: 13px;
-      margin-top: 4px;
-    }
-
-    .section-title {
-      font-weight: 800;
-      margin: 24px 0 12px;
-      font-size: 16px;
-    }
-
-    .card,
-    .option {
-      width: 100%;
-      border: 1px solid var(--border);
-      background: white;
-      border-radius: 18px;
-      padding: 18px;
-      margin-bottom: 12px;
-      text-align: left;
-      box-shadow: 0 2px 7px rgba(20,32,51,.04);
-    }
-
-    button.card:hover,
-    button.option:hover {
-      border-color: #a9c9b2;
-    }
-
-    .card-row {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-    }
-
-    .icon {
-      width: 44px;
-      height: 44px;
-      border-radius: 13px;
-      background: var(--green-light);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 25px;
-      flex: 0 0 auto;
-    }
-
-    .card-title {
-      font-size: 17px;
-      font-weight: 800;
-      color: var(--text);
-    }
-
-    .card-sub {
-      color: var(--muted);
-      margin-top: 5px;
-      font-size: 14px;
-    }
-
-    .count-card {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .count {
-      font-size: 42px;
-      font-weight: 800;
-      margin-top: 5px;
-    }
-
-    .label {
-      color: var(--muted);
-      font-size: 13px;
-      font-weight: 700;
-      text-transform: uppercase;
-    }
-
-    .quick-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-
-    .quick {
-      border: 1px solid var(--border);
-      background: white;
-      border-radius: 15px;
-      padding: 15px 10px;
-      font-weight: 700;
-      color: var(--text);
-    }
-
-    .steps {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin: 4px 0 28px;
-    }
-
-    .step {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      background: #e4e7e5;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 800;
-      color: #59625e;
-      position: relative;
-    }
-
-    .step.done,
-    .step.current {
-      background: var(--green);
-      color: white;
-    }
-
-    .step:not(:last-child)::after {
-      content: "";
-      position: absolute;
-      left: 36px;
-      width: 38px;
-      height: 3px;
-      background: #e4e7e5;
-    }
-
-    .species {
-      min-height: 126px;
-      position: relative;
-    }
-
-    .species.selected {
-      border: 2px solid var(--green);
-      background: var(--green-pale);
-    }
-
-    .animal {
-      font-size: 38px;
-      margin-bottom: 8px;
-    }
-
-    .selected-badge {
-      position: absolute;
-      right: 16px;
-      top: 18px;
-      color: var(--green-dark);
-      background: #dff3e5;
-      border-radius: 20px;
-      padding: 7px 11px;
-      font-size: 12px;
-      font-weight: 800;
-    }
-
-    .primary,
-    .secondary {
-      width: 100%;
-      border: 0;
-      border-radius: 14px;
-      padding: 16px;
-      font-weight: 800;
-      font-size: 16px;
-      margin-top: 10px;
-    }
-
-    .primary {
-      background: var(--green);
-      color: white;
-    }
-
-    .primary:hover {
-      background: var(--green-dark);
-    }
-
-    .secondary {
-      background: #edf0ee;
-      color: var(--text);
-    }
-
-    .button-row {
-      display: grid;
-      grid-template-columns: 1fr 1.5fr;
-      gap: 10px;
-      margin-top: 16px;
-    }
-
-    .reader {
-      background: white;
-      border: 1px solid var(--border);
-      border-radius: 17px;
-      padding: 16px;
-      margin-bottom: 25px;
-    }
-
-    .reader strong {
-      color: var(--green-dark);
-    }
-
-    .blue-dot {
-      display: inline-block;
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      background: #2b75d6;
-      margin-right: 8px;
-    }
-
-    .scanner {
-      width: 230px;
-      height: 230px;
-      border-radius: 50%;
-      border: 16px solid #d9efdf;
-      margin: 28px auto;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      background: white;
-    }
-
-    .scan-number {
-      font-size: 56px;
-      font-weight: 800;
-      color: var(--green);
-      line-height: 1;
-      margin: 8px 0;
-    }
-
-    .stats {
-      background: white;
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 16px;
-      margin: 15px 0;
-    }
-
-    .stat {
-      display: flex;
-      justify-content: space-between;
-      padding: 7px 0;
-    }
-
-    .destination.selected {
-      border: 2px solid var(--green);
-      background: var(--green-pale);
-    }
-
-    .field {
-      margin: 15px 0;
-    }
-
-    .field label {
-      display: block;
-      font-size: 13px;
-      font-weight: 800;
-      margin-bottom: 7px;
-    }
-
-    .field input {
-      width: 100%;
-      border: 1px solid #cfd7d2;
-      border-radius: 11px;
-      padding: 14px;
-      background: white;
-    }
-
-    .radio {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      margin: 13px 0;
-      font-weight: 600;
-    }
-
-    .radio input {
-      accent-color: var(--green);
-      width: 18px;
-      height: 18px;
-    }
-
-    .review-box {
-      background: white;
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      overflow: hidden;
-      margin: 18px 0;
-    }
-
-    .review-row {
-      padding: 15px;
-      border-bottom: 1px solid #edf0ee;
-      display: grid;
-      grid-template-columns: 40px 1fr;
-      gap: 10px;
-    }
-
-    .review-row:last-child {
-      border-bottom: 0;
-    }
-
-    .review-row strong {
-      display: block;
-      margin-bottom: 3px;
-    }
-
-    .success-note {
-      background: #e4f5e8;
-      color: var(--green-dark);
-      border-radius: 13px;
-      padding: 14px;
-      font-weight: 700;
-    }
-
-    .success {
-      text-align: center;
-      padding-top: 45px;
-    }
-
-    .success-icon {
-      width: 105px;
-      height: 105px;
-      background: #1ba04b;
-      color: white;
-      border-radius: 50%;
-      margin: 0 auto 22px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 58px;
-      font-weight: 800;
-    }
-
-    .movement-number {
-      font-weight: 800;
-      font-size: 22px;
-      margin: 8px 0 20px;
-    }
-
-    .qr {
-      width: 165px;
-      height: 165px;
-      margin: 20px auto;
-      background:
-        linear-gradient(90deg,#111 12%,transparent 12% 22%,#111 22% 35%,transparent 35% 45%,#111 45% 57%,transparent 57% 70%,#111 70% 83%,transparent 83%),
-        linear-gradient(#111 12%,transparent 12% 24%,#111 24% 37%,transparent 37% 49%,#111 49% 62%,transparent 62% 75%,#111 75% 88%,transparent 88%);
-      border: 12px solid white;
-      outline: 2px solid #111;
-    }
-
-    .checklist {
-      text-align: left;
-      background: white;
-      border: 1px solid var(--border);
-      border-radius: 17px;
-      padding: 18px;
-      margin: 22px 0;
-    }
-
-    .check {
-      margin: 13px 0;
-      font-weight: 700;
-    }
-
-    .check span {
-      color: #19a34a;
-      margin-right: 8px;
-    }
-
-    .manual-box {
-      background: white;
-      border: 1px solid var(--border);
-      border-radius: 17px;
-      padding: 18px;
-      margin-top: 18px;
-    }
-
-    .tag-list {
-      margin-top: 15px;
-    }
-
-    .tag-item {
-      display: flex;
-      justify-content: space-between;
-      background: #f1f5f2;
-      border-radius: 10px;
-      padding: 11px;
-      margin-top: 8px;
-      font-size: 13px;
-    }
-
-    .bottom-nav {
-      position: fixed;
-      left: 50%;
-      transform: translateX(-50%);
-      bottom: 0;
-      width: 100%;
-      max-width: 430px;
-      height: 76px;
-      background: rgba(255,255,255,.97);
-      border-top: 1px solid #dde3df;
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      z-index: 20;
-    }
-
-    .nav {
-      border: 0;
-      background: transparent;
-      color: #59625e;
-      font-size: 11px;
-      font-weight: 700;
-    }
-
-    .nav-icon {
-      display: block;
-      font-size: 21px;
-      margin-bottom: 4px;
-    }
-
-    .nav.active {
-      color: var(--green);
-    }
-
-    .toast {
-      position: fixed;
-      left: 50%;
-      transform: translateX(-50%);
-      bottom: 92px;
-      background: #142033;
-      color: white;
-      border-radius: 12px;
-      padding: 12px 18px;
-      font-size: 13px;
-      z-index: 50;
-      display: none;
-      max-width: 360px;
-      text-align: center;
-    }
-
-    @media (min-width: 700px) {
-      body {
-        padding: 25px 0;
-      }
-
-      .app {
-        min-height: calc(100vh - 50px);
-        border-radius: 30px;
-        overflow: hidden;
-      }
-
-      .bottom-nav {
-        bottom: 25px;
-        border-radius: 0 0 30px 30px;
-      }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="theme-color" content="#176b3a">
+<title>StockMove Demo</title>
+
+<style>
+*{box-sizing:border-box}
+:root{
+--green:#17783d;--dark:#105f32;--pale:#edf8f0;
+--text:#142033;--muted:#667085;--line:#dfe5e1;
+}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#e9eeea;color:var(--text)}
+button,input{font:inherit}
+button{cursor:pointer}
+.app{max-width:430px;min-height:100vh;margin:auto;background:#f8faf8;padding-bottom:82px}
+.screen{display:none;padding:22px 20px 35px;min-height:calc(100vh - 82px)}
+.screen.active{display:block}
+.brand{font-size:30px;font-weight:900;color:var(--dark)}
+.brand span{color:var(--green)}
+.small{font-size:13px;color:var(--muted)}
+h1{font-size:32px;line-height:1.1;margin:12px 0}
+h2{font-size:23px;margin:22px 0 12px}
+p{color:var(--muted);line-height:1.45}
+.hero{background:linear-gradient(135deg,#dceede,#fafcfa);border:1px solid #d9e4db;border-radius:23px;padding:23px;margin:22px 0}
+.card,.option{width:100%;background:#fff;border:1px solid var(--line);border-radius:17px;padding:17px;margin:11px 0;text-align:left;box-shadow:0 2px 6px #00000008}
+.row{display:flex;align-items:center;gap:14px}
+.grow{flex:1}
+.icon{width:45px;height:45px;border-radius:13px;background:#e6f5ea;display:flex;align-items:center;justify-content:center;font-size:25px}
+.title{font-size:17px;font-weight:800}
+.selected{border:2px solid var(--green);background:var(--pale)}
+.primary,.secondary{width:100%;border:0;border-radius:13px;padding:15px;font-weight:800;font-size:16px;margin-top:10px}
+.primary{background:var(--green);color:white}
+.secondary{background:#edf0ee;color:var(--text)}
+.back{border:0;background:none;color:var(--dark);font-weight:bold;padding:0;margin-bottom:15px}
+.steps{display:flex;justify-content:space-between;margin:5px 0 25px}
+.step{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#e5e8e6;font-weight:bold}
+.step.on{background:var(--green);color:white}
+.scanner{width:215px;height:215px;border:14px solid #d9efdf;border-radius:50%;display:flex;align-items:center;justify-content:center;text-align:center;margin:28px auto;background:white}
+.number{font-size:54px;font-weight:900;color:var(--green)}
+.reader,.good{background:#e7f6eb;border-radius:13px;padding:14px;color:var(--dark)}
+.field{margin:15px 0}
+.field label{font-size:13px;font-weight:bold;display:block;margin-bottom:6px}
+.field input{width:100%;padding:13px;border:1px solid #ccd5cf;border-radius:10px}
+.radio{display:flex;gap:9px;margin:14px 0;align-items:center}
+.review{background:white;border:1px solid var(--line);border-radius:17px;overflow:hidden;margin:17px 0}
+.review div{padding:14px;border-bottom:1px solid #edf0ee}
+.review div:last-child{border:0}
+.success{text-align:center;padding-top:30px}
+.tick{width:95px;height:95px;border-radius:50%;background:#20a34a;color:white;display:flex;align-items:center;justify-content:center;font-size:55px;margin:15px auto}
+.qr{width:155px;height:155px;margin:20px auto;background:repeating-conic-gradient(#111 0 25%,#fff 0 50%) 0/17px 17px;border:10px solid white;outline:2px solid #111}
+.status{display:inline-block;padding:6px 10px;border-radius:20px;background:#dff5e5;color:#126b35;font-size:12px;font-weight:bold}
+.movement-card{background:white;border:1px solid var(--line);border-radius:17px;padding:17px;margin:12px 0;cursor:pointer}
+.movement-card:hover{border-color:var(--green)}
+.movement-top{display:flex;justify-content:space-between;gap:10px;align-items:start}
+.ref{font-size:18px;font-weight:900}
+.route{font-weight:800;margin:12px 0 5px}
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}
+.detail{background:white;border:1px solid var(--line);border-radius:14px;padding:13px}
+.detail b{display:block;margin-top:4px}
+.bottom{position:fixed;bottom:0;left:50%;transform:translateX(-50%);max-width:430px;width:100%;height:72px;background:white;border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(4,1fr)}
+.nav{border:0;background:none;font-size:11px;color:#59625e;font-weight:bold}
+.nav span{display:block;font-size:20px;margin-bottom:3px}
+.nav.active{color:var(--green)}
+.toast{display:none;position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#142033;color:white;padding:12px 16px;border-radius:11px;font-size:13px;max-width:350px;text-align:center}
+</style>
 </head>
 
 <body>
-
 <div class="app">
 
-  <!-- HOME -->
-  <section class="screen active" id="home">
-    <div class="brand">Stock<span>Move</span></div>
-    <div class="tagline">Livestock movements made simple</div>
-
-    <div class="hero">
-      <h1>Good morning,<br>James</h1>
-      <div class="holding">Higher Farm</div>
-      <div class="cph">CPH: 12/345/6789</div>
-    </div>
-
-    <div class="section-title">What would you like to do?</div>
-
-    <button class="card" onclick="showScreen('sheep')">
-      <div class="card-row">
-        <div class="icon">🐑</div>
-        <div>
-          <div class="card-title">Sheep &amp; Goats</div>
-          <div class="card-sub">Manage livestock and movements</div>
-        </div>
-      </div>
-    </button>
-
-    <button class="card" onclick="demoMessage('Cattle will be added in a future version.')">
-      <div class="card-row">
-        <div class="icon">🐄</div>
-        <div>
-          <div class="card-title">Cattle</div>
-          <div class="card-sub">Coming soon</div>
-        </div>
-      </div>
-    </button>
-
-    <button class="card" onclick="demoMessage('Pig movements will be added later.')">
-      <div class="card-row">
-        <div class="icon">🐖</div>
-        <div>
-          <div class="card-title">Pigs</div>
-          <div class="card-sub">Coming soon</div>
-        </div>
-      </div>
-    </button>
-
-    <div class="section-title">Quick actions</div>
-
-    <div class="quick-grid">
-      <button class="quick" onclick="startMovement()">➕ New Movement</button>
-      <button class="quick" onclick="showScreen('sheep')">🐑 My Livestock</button>
-      <button class="quick" onclick="demoMessage('Document centre demo coming next.')">📄 Documents</button>
-      <button class="quick" onclick="demoMessage('Compliance dashboard demo coming next.')">🛡️ Compliance</button>
-    </div>
-  </section>
-
-
-  <!-- SHEEP -->
-  <section class="screen" id="sheep">
-    <button class="back" onclick="showScreen('home')">← Back</button>
-
-    <h1>Sheep &amp; Goats</h1>
-
-    <div class="card count-card">
-      <div>
-        <div class="label">Sheep on holding</div>
-        <div class="count">423</div>
-      </div>
-      <div style="font-size:45px">🐑</div>
-    </div>
-
-    <button class="card" onclick="startMovement()">
-      <div class="card-row">
-        <div class="icon">🚚</div>
-        <div>
-          <div class="card-title">Move sheep</div>
-          <div class="card-sub">Create a livestock movement</div>
-        </div>
-      </div>
-    </button>
-
-    <button class="card" onclick="demoMessage('Registration workflow will be added later.')">
-      <div class="card-row">
-        <div class="icon">➕</div>
-        <div class="card-title">Add / register sheep</div>
-      </div>
-    </button>
-
-    <button class="card" onclick="demoMessage('Flock records demo coming next.')">
-      <div class="card-row">
-        <div class="icon">🐑</div>
-        <div class="card-title">View flock</div>
-      </div>
-    </button>
-
-    <button class="card" onclick="demoMessage('Movement history will appear here.')">
-      <div class="card-row">
-        <div class="icon">🕘</div>
-        <div class="card-title">Movement history</div>
-      </div>
-    </button>
-
-    <button class="card" onclick="demoMessage('Documents will appear here.')">
-      <div class="card-row">
-        <div class="icon">📄</div>
-        <div class="card-title">Documents</div>
-      </div>
-    </button>
-  </section>
-
-
-  <!-- STEP 1 -->
-  <section class="screen" id="species">
-    <button class="back" onclick="showScreen('sheep')">← Back</button>
-
-    <div class="steps">
-      <div class="step current">1</div>
-      <div class="step">2</div>
-      <div class="step">3</div>
-      <div class="step">4</div>
-      <div class="step">5</div>
-    </div>
-
-    <div class="eyebrow">New livestock movement</div>
-    <h1>What are you moving?</h1>
-    <p>Select the species for this movement.</p>
-
-    <button id="sheepOption" class="option species selected" onclick="selectSpecies('Sheep')">
-      <div class="animal">🐑</div>
-      <div class="card-title">Sheep</div>
-      <span class="selected-badge">Selected</span>
-    </button>
-
-    <button id="goatOption" class="option species" onclick="selectSpecies('Goats')">
-      <div class="animal">🐐</div>
-      <div class="card-title">Goats</div>
-    </button>
-
-    <button class="primary" onclick="showScreen('animals')">Continue</button>
-  </section>
-
-
-  <!-- STEP 2 -->
-  <section class="screen" id="animals">
-    <button class="back" onclick="showScreen('species')">← Back</button>
-
-    <div class="steps">
-      <div class="step done">1</div>
-      <div class="step current">2</div>
-      <div class="step">3</div>
-      <div class="step">4</div>
-      <div class="step">5</div>
-    </div>
-
-    <h1>Select Animals</h1>
-    <p>How would you like to identify the animals?</p>
-
-    <button class="option" onclick="startScanning()">
-      <div class="card-row">
-        <div class="icon">📡</div>
-        <div>
-          <div class="card-title">Scan EID tags</div>
-          <div class="card-sub">Use a compatible EID reader</div>
-        </div>
-      </div>
-    </button>
-
-    <button class="option" onclick="showScreen('manual')">
-      <div class="card-row">
-        <div class="icon">⌨️</div>
-        <div>
-          <div class="card-title">Enter tag manually</div>
-          <div class="card-sub">Enter individual identification</div>
-        </div>
-      </div>
-    </button>
-
-    <button class="option" onclick="selectFlock()">
-      <div class="card-row">
-        <div class="icon">☷</div>
-        <div>
-          <div class="card-title">Select from flock</div>
-          <div class="card-sub">Choose from existing records</div>
-        </div>
-      </div>
-    </button>
-
-    <button class="option" onclick="batchAnimals()">
-      <div class="card-row">
-        <div class="icon">👥</div>
-        <div>
-          <div class="card-title">Add a batch / group</div>
-          <div class="card-sub">For eligible movements</div>
-        </div>
-      </div>
-    </button>
-  </section>
-
-
-  <!-- MANUAL TAG -->
-  <section class="screen" id="manual">
-    <button class="back" onclick="showScreen('animals')">← Back</button>
-
-    <h1>Enter tags</h1>
-    <p>Add individual animal identification numbers.</p>
-
-    <div class="manual-box">
-      <div class="field">
-        <label>EID / identification number</label>
-        <input id="manualTag" placeholder="e.g. UK012345678901" />
-      </div>
-
-      <button class="primary" onclick="addManualTag()">Add animal</button>
-
-      <div id="tagList" class="tag-list"></div>
-    </div>
-
-    <button class="primary" onclick="finishManual()">Continue</button>
-  </section>
-
-
-  <!-- SCANNER -->
-  <section class="screen" id="scanner">
-    <button class="back" onclick="showScreen('animals')">← Back</button>
-
-    <div class="steps">
-      <div class="step done">1</div>
-      <div class="step current">2</div>
-      <div class="step">3</div>
-      <div class="step">4</div>
-      <div class="step">5</div>
-    </div>
-
-    <h1>Scan Animals</h1>
-
-    <div class="reader">
-      <strong><span class="blue-dot"></span>EID Reader Connected</strong>
-      <div class="small" style="margin-top:5px;color:#667085">Demo reader</div>
-    </div>
-
-    <div class="scanner">
-      <div>
-        <div style="font-size:28px">📡</div>
-        <strong>Scanning...</strong>
-        <div id="scanCount" class="scan-number">0</div>
-        <div>sheep scanned</div>
-      </div>
-    </div>
-
-    <div class="stats">
-      <div class="stat"><span>Recognised</span><strong id="recognised">0 ✓</strong></div>
-      <div class="stat"><span>Duplicates</span><strong>0</strong></div>
-      <div class="stat"><span>Unknown tags</span><strong>0</strong></div>
-    </div>
-
-    <button class="primary" onclick="simulateScan()">Simulate 5 EID scans</button>
-    <button class="secondary" onclick="finishScanning()">Finish Scanning</button>
-  </section>
-
-
-  <!-- DESTINATION -->
-  <section class="screen" id="destination">
-    <button class="back" onclick="showScreen('animals')">← Back</button>
-
-    <div class="steps">
-      <div class="step done">1</div>
-      <div class="step done">2</div>
-      <div class="step current">3</div>
-      <div class="step">4</div>
-      <div class="step">5</div>
-    </div>
-
-    <h1>Destination</h1>
-    <p>Where are the animals going?</p>
-
-    <button class="option destination selected" data-destination="Livestock Market" onclick="chooseDestination(this)">
-      <div class="card-row">
-        <div class="icon">🏛️</div>
-        <div class="card-title">Livestock Market</div>
-      </div>
-    </button>
-
-    <button class="option destination" data-destination="Another Farm" onclick="chooseDestination(this)">
-      <div class="card-row">
-        <div class="icon">🏠</div>
-        <div class="card-title">Another Farm</div>
-      </div>
-    </button>
-
-    <button class="option destination" data-destination="Slaughterhouse" onclick="chooseDestination(this)">
-      <div class="card-row">
-        <div class="icon">🏭</div>
-        <div class="card-title">Slaughterhouse</div>
-      </div>
-    </button>
-
-    <button class="option destination" data-destination="Show" onclick="chooseDestination(this)">
-      <div class="card-row">
-        <div class="icon">🏆</div>
-        <div class="card-title">Show</div>
-      </div>
-    </button>
-
-    <button class="option destination" data-destination="Other" onclick="chooseDestination(this)">
-      <div class="card-row">
-        <div class="icon">📍</div>
-        <div class="card-title">Other</div>
-      </div>
-    </button>
-
-    <div class="field">
-      <label>Destination / holding</label>
-      <input id="destinationName" value="Exeter Livestock Centre" />
-    </div>
-
-    <div class="field">
-      <label>Destination CPH (demo)</label>
-      <input id="destinationCPH" value="50/123/4567" />
-    </div>
-
-    <div class="button-row">
-      <button class="secondary" onclick="showScreen('animals')">Back</button>
-      <button class="primary" onclick="showScreen('transport')">Continue</button>
-    </div>
-  </section>
-
-
-  <!-- TRANSPORT -->
-  <section class="screen" id="transport">
-    <button class="back" onclick="showScreen('destination')">← Back</button>
-
-    <div class="steps">
-      <div class="step done">1</div>
-      <div class="step done">2</div>
-      <div class="step done">3</div>
-      <div class="step current">4</div>
-      <div class="step">5</div>
-    </div>
-
-    <h1>Transport Details</h1>
-    <p>Who is transporting the animals?</p>
-
-    <label class="radio">
-      <input type="radio" name="transporter" value="Myself" checked />
-      Myself (Departure Keeper)
-    </label>
-
-    <label class="radio">
-      <input type="radio" name="transporter" value="Receiving Keeper" />
-      Receiving Keeper
-    </label>
-
-    <label class="radio">
-      <input type="radio" name="transporter" value="Haulier" />
-      Haulier / Transport Company
-    </label>
-
-    <div class="field">
-      <label>Vehicle registration</label>
-      <input id="vehicle" value="AB12 CDE" />
-    </div>
-
-    <div class="field">
-      <label>Haulage company (if applicable)</label>
-      <input id="haulier" value="Smith Livestock Transport" />
-    </div>
-
-    <div class="field">
-      <label>Transporter authorisation number</label>
-      <input id="authorisation" value="12345678" />
-    </div>
-
-    <div class="field">
-      <label>Expected journey duration</label>
-      <input id="duration" value="01:15" />
-    </div>
-
-    <div class="button-row">
-      <button class="secondary" onclick="showScreen('destination')">Back</button>
-      <button class="primary" onclick="prepareReview()">Continue</button>
-    </div>
-  </section>
-
-
-  <!-- REVIEW -->
-  <section class="screen" id="review">
-    <button class="back" onclick="showScreen('transport')">← Back</button>
-
-    <div class="steps">
-      <div class="step done">1</div>
-      <div class="step done">2</div>
-      <div class="step done">3</div>
-      <div class="step done">4</div>
-      <div class="step current">5</div>
-    </div>
-
-    <h1>Review Movement</h1>
-    <p>Check your details before creating the movement.</p>
-
-    <div class="review-box">
-      <div class="review-row">
-        <div>🐑</div>
-        <div>
-          <strong>Animals</strong>
-          <span id="reviewAnimals">5 sheep</span>
-        </div>
-      </div>
-
-      <div class="review-row">
-        <div>🏠</div>
-        <div>
-          <strong>From</strong>
-          Higher Farm<br>
-          <span class="small">CPH: 12/345/6789</span>
-        </div>
-      </div>
-
-      <div class="review-row">
-        <div>🏛️</div>
-        <div>
-          <strong>To</strong>
-          <span id="reviewDestination">Exeter Livestock Centre</span><br>
-          <span id="reviewCPH" class="small">CPH: 50/123/4567</span>
-        </div>
-      </div>
-
-      <div class="review-row">
-        <div>🚚</div>
-        <div>
-          <strong>Transport</strong>
-          <span id="reviewTransport">Myself</span><br>
-          <span id="reviewVehicle" class="small">Vehicle: AB12 CDE</span>
-        </div>
-      </div>
-
-      <div class="review-row">
-        <div>📅</div>
-        <div>
-          <strong>Date of departure</strong>
-          24 Sep 2026
-        </div>
-      </div>
-    </div>
-
-    <div class="success-note">
-      ✓ Everything looks good. Your movement is ready to create.
-    </div>
-
-    <div class="button-row">
-      <button class="secondary" onclick="showScreen('transport')">Back</button>
-      <button class="primary" onclick="createMovement()">Create Movement</button>
-    </div>
-  </section>
-
-
-  <!-- MOVEMENT PASS -->
-  <section class="screen success" id="ready">
-    <div class="success-icon">✓</div>
-
-    <h1>Movement created</h1>
-    <div class="movement-number">SM-829174</div>
-
-    <div class="qr" aria-label="Demo QR code"></div>
-
-    <strong>Higher Farm → <span id="passDestination">Exeter Livestock Centre</span></strong>
-    <p><strong id="passAnimals">5 sheep</strong><br>Departure: 24 Sep 2026</p>
-
-    <div class="success-note">
-      ✓ Show this movement pass at the destination. This QR code is for prototype demonstration only.
-    </div>
-
-    <button class="primary" onclick="demoMessage('Printable movement document would open here.')">
-      View / Print Document
-    </button>
-
-    <button class="secondary" onclick="showScreen('complete')">
-      Complete movement
-    </button>
-  </section>
-
-
-  <!-- COMPLETE -->
-  <section class="screen success" id="complete">
-    <div style="font-size:72px">🎉</div>
-
-    <h1>Movement complete</h1>
-    <p>Your records have been saved.</p>
-
-    <div class="checklist">
-      <div class="check"><span>✓</span>Movement record created</div>
-      <div class="check"><span>✓</span>LIS submission ready</div>
-      <div class="check"><span>✓</span>Holding register updated</div>
-      <div class="check"><span>✓</span>Digital document saved</div>
-    </div>
-
-    <p class="small">
-      Don't forget: the receiving keeper may need to confirm the on-movement.
-    </p>
-
-    <button class="primary" onclick="demoMessage('Movement SM-829174 saved to movement history.')">
-      View Movement
-    </button>
-
-    <button class="secondary" onclick="resetDemo()">
-      Back to Home
-    </button>
-  </section>
-
-
-  <nav class="bottom-nav">
-    <button class="nav active" onclick="showScreen('home')">
-      <span class="nav-icon">⌂</span>
-      Home
-    </button>
-
-    <button class="nav" onclick="demoMessage('Movement history demo coming next.')">
-      <span class="nav-icon">⇄</span>
-      Movements
-    </button>
-
-    <button class="nav" onclick="showScreen('sheep')">
-      <span class="nav-icon">🐑</span>
-      Livestock
-    </button>
-
-    <button class="nav" onclick="demoMessage('More settings and account tools will go here.')">
-      <span class="nav-icon">•••</span>
-      More
-    </button>
-  </nav>
+<section class="screen active" id="home">
+<div class="brand">Stock<span>Move</span></div>
+<div class="small">Livestock movements made simple</div>
+
+<div class="hero">
+<h1>Good morning,<br>James</h1>
+<b>Higher Farm</b>
+<div class="small">CPH: 12/345/6789</div>
+</div>
+
+<h2>What would you like to do?</h2>
+
+<button class="card" onclick="show('sheep')">
+<div class="row"><div class="icon">🐑</div><div><div class="title">Sheep &amp; Goats</div><div class="small">Manage livestock and movements</div></div></div>
+</button>
+
+<button class="card" onclick="message('Cattle will be added in a future version.')">
+<div class="row"><div class="icon">🐄</div><div><div class="title">Cattle</div><div class="small">Coming soon</div></div></div>
+</button>
+
+<button class="card" onclick="message('Pig movements will be added later.')">
+<div class="row"><div class="icon">🐖</div><div><div class="title">Pigs</div><div class="small">Coming soon</div></div></div>
+</button>
+
+<h2>Quick actions</h2>
+<button class="primary" onclick="startMovement()">＋ New Movement</button>
+</section>
+
+
+<section class="screen" id="sheep">
+<button class="back" onclick="show('home')">← Back</button>
+<h1>Sheep &amp; Goats</h1>
+
+<div class="card">
+<div class="row"><div class="grow"><div class="small">SHEEP ON HOLDING</div><div style="font-size:42px;font-weight:900">423</div></div><div style="font-size:45px">🐑</div></div>
+</div>
+
+<button class="card" onclick="startMovement()"><div class="row"><div class="icon">🚚</div><div><div class="title">Move sheep</div><div class="small">Create a livestock movement</div></div></div></button>
+<button class="card" onclick="message('Registration workflow coming later.')"><div class="row"><div class="icon">➕</div><div class="title">Add / register sheep</div></div></button>
+<button class="card" onclick="message('Flock records are coming next.')"><div class="row"><div class="icon">🐑</div><div class="title">View flock</div></div></button>
+<button class="card" onclick="openHistory()"><div class="row"><div class="icon">🕘</div><div class="title">Movement history</div></div></button>
+<button class="card" onclick="message('Documents section coming later.')"><div class="row"><div class="icon">📄</div><div class="title">Documents</div></div></button>
+</section>
+
+
+<section class="screen" id="species">
+<button class="back" onclick="show('sheep')">← Back</button>
+<div class="steps"><div class="step on">1</div><div class="step">2</div><div class="step">3</div><div class="step">4</div><div class="step">5</div></div>
+<h1>What are you moving?</h1>
+<p>Select the species for this movement.</p>
+
+<button id="sheepChoice" class="option selected" onclick="species('Sheep')"><div style="font-size:38px">🐑</div><div class="title">Sheep</div></button>
+<button id="goatChoice" class="option" onclick="species('Goats')"><div style="font-size:38px">🐐</div><div class="title">Goats</div></button>
+<button class="primary" onclick="show('animals')">Continue</button>
+</section>
+
+
+<section class="screen" id="animals">
+<button class="back" onclick="show('species')">← Back</button>
+<div class="steps"><div class="step on">1</div><div class="step on">2</div><div class="step">3</div><div class="step">4</div><div class="step">5</div></div>
+<h1>Select Animals</h1>
+<p>How would you like to identify the animals?</p>
+
+<button class="option" onclick="startScan()"><div class="row"><div class="icon">📡</div><div><div class="title">Scan EID tags</div><div class="small">Use a compatible EID reader</div></div></div></button>
+<button class="option" onclick="manualDemo()"><div class="row"><div class="icon">⌨️</div><div><div class="title">Enter tag manually</div><div class="small">Enter individual identification</div></div></div></button>
+<button class="option" onclick="flockDemo()"><div class="row"><div class="icon">☷</div><div><div class="title">Select from flock</div><div class="small">Choose from existing records</div></div></div></button>
+</section>
+
+
+<section class="screen" id="scanner">
+<button class="back" onclick="show('animals')">← Back</button>
+<div class="steps"><div class="step on">1</div><div class="step on">2</div><div class="step">3</div><div class="step">4</div><div class="step">5</div></div>
+<h1>Scan Animals</h1>
+
+<div class="reader">🔵 <b>EID Reader Connected</b><br><span class="small">Demo reader</span></div>
+
+<div class="scanner"><div>📡<br><b>Scanning...</b><div id="scanNumber" class="number">0</div><span class="small">sheep scanned</span></div></div>
+
+<div class="card">
+<div class="row"><span>Recognised</span><b id="recognised">0 ✓</b></div><br>
+<div class="row"><span>Duplicates</span><b>0</b></div><br>
+<div class="row"><span>Unknown tags</span><b>0</b></div>
+</div>
+
+<button class="primary" onclick="scanFive()">Simulate 5 EID scans</button>
+<button class="secondary" onclick="finishScan()">Finish Scanning</button>
+</section>
+
+
+<section class="screen" id="destination">
+<button class="back" onclick="show('animals')">← Back</button>
+<div class="steps"><div class="step on">1</div><div class="step on">2</div><div class="step on">3</div><div class="step">4</div><div class="step">5</div></div>
+<h1>Destination</h1>
+<p>Where are the animals going?</p>
+
+<button class="option selected dest" onclick="chooseDest(this,'Livestock Market','Exeter Livestock Centre','50/123/4567')">🏛️ <b>Livestock Market</b></button>
+<button class="option dest" onclick="chooseDest(this,'Another Farm','Willow Farm','50/555/4321')">🏠 <b>Another Farm</b></button>
+<button class="option dest" onclick="chooseDest(this,'Slaughterhouse','West Country Abattoir','50/987/1234')">🏭 <b>Slaughterhouse</b></button>
+<button class="option dest" onclick="chooseDest(this,'Show','Devon County Show','50/222/7788')">🏆 <b>Show</b></button>
+
+<div class="field"><label>Destination / holding</label><input id="destName" value="Exeter Livestock Centre"></div>
+<div class="field"><label>Destination CPH</label><input id="destCPH" value="50/123/4567"></div>
+
+<button class="primary" onclick="show('transport')">Continue</button>
+</section>
+
+
+<section class="screen" id="transport">
+<button class="back" onclick="show('destination')">← Back</button>
+<div class="steps"><div class="step on">1</div><div class="step on">2</div><div class="step on">3</div><div class="step on">4</div><div class="step">5</div></div>
+<h1>Transport Details</h1>
+
+<label class="radio"><input type="radio" name="trans" value="Myself" checked> Myself (Departure Keeper)</label>
+<label class="radio"><input type="radio" name="trans" value="Receiving Keeper"> Receiving Keeper</label>
+<label class="radio"><input type="radio" name="trans" value="Haulier"> Haulier / Transport Company</label>
+
+<div class="field"><label>Vehicle registration</label><input id="vehicle" value="AB12 CDE"></div>
+<div class="field"><label>Haulage company</label><input id="haulier" placeholder="Only if using a haulier"></div>
+<div class="field"><label>Transporter authorisation number</label><input id="auth" placeholder="If applicable"></div>
+<div class="field"><label>Expected journey duration</label><input id="duration" value="01:15"></div>
+
+<button class="primary" onclick="review()">Continue</button>
+</section>
+
+
+<section class="screen" id="review">
+<button class="back" onclick="show('transport')">← Back</button>
+<div class="steps"><div class="step on">1</div><div class="step on">2</div><div class="step on">3</div><div class="step on">4</div><div class="step on">5</div></div>
+<h1>Review Movement</h1>
+
+<div class="review">
+<div>🐑 <b>Animals</b><br><span id="rAnimals"></span></div>
+<div>🏠 <b>From</b><br>Higher Farm<br><span class="small">CPH: 12/345/6789</span></div>
+<div>🏛️ <b>To</b><br><span id="rDestination"></span><br><span id="rCPH" class="small"></span></div>
+<div>🚚 <b>Transport</b><br><span id="rTransport"></span><br><span id="rVehicle" class="small"></span></div>
+<div>📅 <b>Date of departure</b><br>24 Sep 2026</div>
+</div>
+
+<div class="good">✓ Everything looks good. Your movement is ready to create.</div>
+<button class="primary" onclick="createMovement()">Create Movement</button>
+</section>
+
+
+<section class="screen success" id="pass">
+<div class="tick">✓</div>
+<h1>Movement created</h1>
+<div style="font-size:22px;font-weight:900" id="passRef"></div>
+<div class="qr"></div>
+<b>Higher Farm → <span id="passDest"></span></b>
+<p><b id="passAnimals"></b><br>Departure: 24 Sep 2026</p>
+<div class="good">✓ Show this movement pass at the destination. QR shown for prototype demonstration.</div>
+<button class="primary" onclick="message('Printable movement document will be added in the Documents upgrade.')">View / Print Document</button>
+<button class="secondary" onclick="completeMovement()">Complete movement</button>
+</section>
+
+
+<section class="screen success" id="complete">
+<div style="font-size:70px">🎉</div>
+<h1>Movement complete</h1>
+<p>Your records have been saved.</p>
+
+<div class="card" style="text-align:left">
+<p>✅ Movement record created</p>
+<p>✅ LIS submission ready <span class="small">(prototype)</span></p>
+<p>✅ Holding register updated <span class="small">(prototype)</span></p>
+<p>✅ Digital document saved <span class="small">(prototype)</span></p>
+</div>
+
+<button class="primary" onclick="viewLatestMovement()">View Movement</button>
+<button class="secondary" onclick="show('home')">Back to Home</button>
+</section>
+
+
+<!-- MOVEMENT HISTORY -->
+<section class="screen" id="history">
+<button class="back" onclick="show('home')">← Back</button>
+<h1>Movements</h1>
+<p>Your recent livestock movements.</p>
+
+<div id="historyList"></div>
+</section>
+
+
+<!-- MOVEMENT DETAILS -->
+<section class="screen" id="movementDetails">
+<button class="back" onclick="openHistory()">← Movement History</button>
+
+<div class="movement-top">
+<div>
+<div class="small">MOVEMENT REFERENCE</div>
+<div class="ref" id="detailRef"></div>
+</div>
+<span class="status">Complete</span>
+</div>
+
+<h1>Movement Details</h1>
+
+<div class="card">
+<div class="small">ROUTE</div>
+<div class="route">Higher Farm → <span id="detailDestination"></span></div>
+<div class="small">24 Sep 2026</div>
+</div>
+
+<div class="detail-grid">
+<div class="detail"><span class="small">Animals</span><b id="detailAnimals"></b></div>
+<div class="detail"><span class="small">Species</span><b id="detailSpecies"></b></div>
+<div class="detail"><span class="small">Vehicle</span><b id="detailVehicle"></b></div>
+<div class="detail"><span class="small">Transporter</span><b id="detailTransport"></b></div>
+</div>
+
+<div class="card">
+<div class="small">DEPARTURE</div>
+<h3>Higher Farm</h3>
+<div class="small">CPH: 12/345/6789</div>
+</div>
+
+<div class="card">
+<div class="small">DESTINATION</div>
+<h3 id="detailDestination2"></h3>
+<div class="small" id="detailCPH"></div>
+</div>
+
+<div class="card">
+<div class="small">ANIMAL IDENTIFICATION</div>
+<div id="eidList"></div>
+</div>
+
+<button class="primary" onclick="show('pass')">View Movement Pass</button>
+<button class="secondary" onclick="message('Printable movement document will open here in the next upgrade.')">View / Print Document</button>
+</section>
+
+
+<nav class="bottom">
+<button class="nav active" onclick="show('home')"><span>⌂</span>Home</button>
+<button class="nav" onclick="openHistory()"><span>⇄</span>Movements</button>
+<button class="nav" onclick="show('sheep')"><span>🐑</span>Livestock</button>
+<button class="nav" onclick="message('Account, holdings and settings will go here.')"><span>•••</span>More</button>
+</nav>
 
 </div>
 
 <div id="toast" class="toast"></div>
 
-
 <script>
-  let selectedSpecies = "Sheep";
-  let animalCount = 0;
-  let destinationType = "Livestock Market";
-  let manualTags = [];
+let state={
+ species:"Sheep",
+ count:0,
+ destination:"Exeter Livestock Centre",
+ destinationCPH:"50/123/4567",
+ transporter:"Myself",
+ vehicle:"AB12 CDE",
+ ref:"SM-829174",
+ complete:false,
+ eids:[]
+};
 
-  function showScreen(id) {
-    document.querySelectorAll(".screen").forEach(screen => {
-      screen.classList.remove("active");
-    });
+let movements=[
+ {
+  ref:"SM-827641",
+  date:"21 Sep 2026",
+  species:"Sheep",
+  count:18,
+  destination:"Newton Abbot Livestock Market",
+  destinationCPH:"50/222/1111",
+  transporter:"Myself",
+  vehicle:"AB12 CDE",
+  complete:true,
+  eids:["UK012345670001","UK012345670002","UK012345670003"]
+ }
+];
 
-    const screen = document.getElementById(id);
+function show(id){
+ document.querySelectorAll(".screen").forEach(x=>x.classList.remove("active"));
+ document.getElementById(id).classList.add("active");
+ window.scrollTo(0,0);
+}
 
-    if (screen) {
-      screen.classList.add("active");
-      window.scrollTo(0, 0);
-    }
-  }
+function message(t){
+ const x=document.getElementById("toast");
+ x.textContent=t;x.style.display="block";
+ clearTimeout(window.tm);
+ window.tm=setTimeout(()=>x.style.display="none",2300);
+}
 
-  function demoMessage(message) {
-    const toast = document.getElementById("toast");
-    toast.textContent = message;
-    toast.style.display = "block";
+function startMovement(){
+ state={species:"Sheep",count:0,destination:"Exeter Livestock Centre",destinationCPH:"50/123/4567",transporter:"Myself",vehicle:"AB12 CDE",ref:"SM-"+Math.floor(100000+Math.random()*899999),complete:false,eids:[]};
+ species("Sheep");
+ show("species");
+}
 
-    clearTimeout(window.toastTimer);
+function species(s){
+ state.species=s;
+ document.getElementById("sheepChoice").classList.toggle("selected",s==="Sheep");
+ document.getElementById("goatChoice").classList.toggle("selected",s==="Goats");
+}
 
-    window.toastTimer = setTimeout(() => {
-      toast.style.display = "none";
-    }, 2400);
-  }
+function startScan(){
+ state.count=0;state.eids=[];
+ scanNumber.textContent="0";recognised.textContent="0 ✓";
+ show("scanner");
+}
 
-  function startMovement() {
-    selectedSpecies = "Sheep";
-    animalCount = 0;
-    manualTags = [];
+function scanFive(){
+ for(let i=0;i<5;i++){
+  state.eids.push("UK01234567"+String(state.eids.length+1).padStart(4,"0"));
+ }
+ state.count=state.eids.length;
+ scanNumber.textContent=state.count;
+ recognised.textContent=state.count+" ✓";
+ message("5 demo EID tags scanned.");
+}
 
-    document.getElementById("scanCount").textContent = "0";
-    document.getElementById("recognised").textContent = "0 ✓";
+function finishScan(){
+ if(!state.count){message("Scan at least one animal first.");return}
+ show("destination");
+}
 
-    selectSpecies("Sheep");
-    showScreen("species");
-  }
+function manualDemo(){
+ state.count=1;
+ state.eids=["UK012345670001"];
+ message("1 demo tag entered manually.");
+ setTimeout(()=>show("destination"),600);
+}
 
-  function selectSpecies(species) {
-    selectedSpecies = species;
+function flockDemo(){
+ state.count=12;
+ state.eids=Array.from({length:12},(_,i)=>"UK01234567"+String(i+1).padStart(4,"0"));
+ message("12 sheep selected from flock.");
+ setTimeout(()=>show("destination"),600);
+}
 
-    const sheep = document.getElementById("sheepOption");
-    const goat = document.getElementById("goatOption");
+function chooseDest(el,type,name,cph){
+ document.querySelectorAll(".dest").forEach(x=>x.classList.remove("selected"));
+ el.classList.add("selected");
+ destName.value=name;
+ destCPH.value=cph;
+ state.destination=name;
+ state.destinationCPH=cph;
+}
 
-    sheep.classList.remove("selected");
-    goat.classList.remove("selected");
+function review(){
+ state.destination=destName.value;
+ state.destinationCPH=destCPH.value;
+ state.vehicle=vehicle.value;
+ state.transporter=document.querySelector('input[name="trans"]:checked').value;
+ if(!state.count){state.count=5}
+ rAnimals.textContent=state.count+" "+state.species.toLowerCase();
+ rDestination.textContent=state.destination;
+ rCPH.textContent="CPH: "+state.destinationCPH;
+ rTransport.textContent=state.transporter;
+ rVehicle.textContent="Vehicle: "+state.vehicle;
+ show("review");
+}
 
-    sheep.querySelector(".selected-badge")?.remove();
-    goat.querySelector(".selected-badge")?.remove();
+function createMovement(){
+ passRef.textContent=state.ref;
+ passDest.textContent=state.destination;
+ passAnimals.textContent=state.count+" "+state.species.toLowerCase();
+ show("pass");
+}
 
-    const selected = species === "Sheep" ? sheep : goat;
-    selected.classList.add("selected");
+function completeMovement(){
+ state.complete=true;
 
-    const badge = document.createElement("span");
-    badge.className = "selected-badge";
-    badge.textContent = "Selected";
-    selected.appendChild(badge);
-  }
+ const existing=movements.findIndex(m=>m.ref===state.ref);
+ if(existing>=0) movements[existing]={...state,date:"24 Sep 2026"};
+ else movements.unshift({...state,date:"24 Sep 2026"});
 
-  function startScanning() {
-    animalCount = 0;
-    document.getElementById("scanCount").textContent = "0";
-    document.getElementById("recognised").textContent = "0 ✓";
-    showScreen("scanner");
-  }
+ saveMovements();
+ show("complete");
+}
 
-  function simulateScan() {
-    animalCount += 5;
+function saveMovements(){
+ try{localStorage.setItem("stockmoveMovements",JSON.stringify(movements))}catch(e){}
+}
 
-    document.getElementById("scanCount").textContent = animalCount;
-    document.getElementById("recognised").textContent = animalCount + " ✓";
+function loadMovements(){
+ try{
+  const saved=localStorage.getItem("stockmoveMovements");
+  if(saved) movements=JSON.parse(saved);
+ }catch(e){}
+}
 
-    demoMessage("5 demo EID tags scanned successfully.");
-  }
+function openHistory(){
+ renderHistory();
+ show("history");
+}
 
-  function finishScanning() {
-    if (animalCount === 0) {
-      demoMessage("Scan at least one animal first.");
-      return;
-    }
+function renderHistory(){
+ const list=document.getElementById("historyList");
 
-    showScreen("destination");
-  }
+ if(!movements.length){
+  list.innerHTML='<div class="card"><b>No movements yet</b><p>Your completed movements will appear here.</p></div>';
+  return;
+ }
 
-  function addManualTag() {
-    const input = document.getElementById("manualTag");
-    const value = input.value.trim();
+ list.innerHTML=movements.map((m,i)=>`
+ <div class="movement-card" onclick="openMovement(${i})">
+   <div class="movement-top">
+    <div class="ref">${m.ref}</div>
+    <span class="status">${m.complete?"Complete":"Draft"}</span>
+   </div>
+   <div class="route">Higher Farm → ${escapeText(m.destination)}</div>
+   <div class="small">${m.date} · ${m.count} ${m.species.toLowerCase()} · ${escapeText(m.vehicle)}</div>
+ </div>`).join("");
+}
 
-    if (!value) {
-      demoMessage("Enter an identification number first.");
-      return;
-    }
+function openMovement(i){
+ const m=movements[i];
+ detailRef.textContent=m.ref;
+ detailDestination.textContent=m.destination;
+ detailDestination2.textContent=m.destination;
+ detailCPH.textContent="CPH: "+m.destinationCPH;
+ detailAnimals.textContent=m.count;
+ detailSpecies.textContent=m.species;
+ detailVehicle.textContent=m.vehicle;
+ detailTransport.textContent=m.transporter;
 
-    manualTags.push(value);
-    animalCount = manualTags.length;
+ eidList.innerHTML=(m.eids&&m.eids.length)
+ ?m.eids.map((eid,n)=>`<div style="padding:9px 0;border-bottom:1px solid #edf0ee"><b>${n+1}.</b> ${escapeText(eid)}</div>`).join("")
+ :'<p class="small">No individual EID list stored for this movement.</p>';
 
-    const list = document.getElementById("tagList");
+ state={...m};
+ passRef.textContent=m.ref;
+ passDest.textContent=m.destination;
+ passAnimals.textContent=m.count+" "+m.species.toLowerCase();
 
-    const item = document.createElement("div");
-    item.className = "tag-item";
-    item.innerHTML =
-      "<span>" + escapeHtml(value) + "</span><strong>✓ Added</strong>";
+ show("movementDetails");
+}
 
-    list.appendChild(item);
+function viewLatestMovement(){
+ const i=movements.findIndex(m=>m.ref===state.ref);
+ if(i>=0) openMovement(i);
+ else openHistory();
+}
 
-    input.value = "";
-  }
+function escapeText(v){
+ const d=document.createElement("div");
+ d.textContent=v||"";
+ return d.innerHTML;
+}
 
-  function finishManual() {
-    if (manualTags.length === 0) {
-      demoMessage("Add at least one animal first.");
-      return;
-    }
-
-    showScreen("destination");
-  }
-
-  function selectFlock() {
-    animalCount = 12;
-    demoMessage("12 sheep selected from flock.");
-    setTimeout(() => showScreen("destination"), 700);
-  }
-
-  function batchAnimals() {
-    animalCount = 25;
-    demoMessage("Demo batch of 25 sheep added.");
-    setTimeout(() => showScreen("destination"), 700);
-  }
-
-  function chooseDestination(button) {
-    document.querySelectorAll(".destination").forEach(option => {
-      option.classList.remove("selected");
-    });
-
-    button.classList.add("selected");
-    destinationType = button.dataset.destination;
-
-    const name = document.getElementById("destinationName");
-
-    const names = {
-      "Livestock Market": "Exeter Livestock Centre",
-      "Another Farm": "Willow Farm",
-      "Slaughterhouse": "West Country Abattoir",
-      "Show": "Devon County Show",
-      "Other": ""
-    };
-
-    name.value = names[destinationType] || "";
-  }
-
-  function prepareReview() {
-    if (animalCount === 0) {
-      animalCount = 5;
-    }
-
-    const destination =
-      document.getElementById("destinationName").value.trim() ||
-      destinationType;
-
-    const cph =
-      document.getElementById("destinationCPH").value.trim();
-
-    const vehicle =
-      document.getElementById("vehicle").value.trim();
-
-    const transporter =
-      document.querySelector('input[name="transporter"]:checked').value;
-
-    const animalWord =
-      selectedSpecies === "Goats" ? "goats" : "sheep";
-
-    document.getElementById("reviewAnimals").textContent =
-      animalCount + " " + animalWord;
-
-    document.getElementById("reviewDestination").textContent =
-      destination;
-
-    document.getElementById("reviewCPH").textContent =
-      "CPH: " + cph;
-
-    document.getElementById("reviewTransport").textContent =
-      transporter;
-
-    document.getElementById("reviewVehicle").textContent =
-      "Vehicle: " + vehicle;
-
-    document.getElementById("passDestination").textContent =
-      destination;
-
-    document.getElementById("passAnimals").textContent =
-      animalCount + " " + animalWord;
-
-    showScreen("review");
-  }
-
-  function createMovement() {
-    showScreen("ready");
-  }
-
-  function resetDemo() {
-    selectedSpecies = "Sheep";
-    animalCount = 0;
-    manualTags = [];
-
-    document.getElementById("tagList").innerHTML = "";
-    document.getElementById("manualTag").value = "";
-    document.getElementById("scanCount").textContent = "0";
-    document.getElementById("recognised").textContent = "0 ✓";
-
-    showScreen("home");
-  }
-
-  function escapeHtml(value) {
-    return value
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#039;");
-  }
+loadMovements();
 </script>
-
 </body>
 </html>
