@@ -466,7 +466,9 @@ function manualDemo(){
     state.eids.length + " of " + state.count + " animal IDs entered";
 
   input.focus();
-}function finishManualTags(){
+}
+  
+  function finishManualTags(){
     if (!state.eids || state.eids.length < state.count) {
         message("Enter all animal IDs before continuing.");
         return;
