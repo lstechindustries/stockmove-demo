@@ -159,6 +159,33 @@ p{color:var(--muted);line-height:1.45}
 <button class="secondary" onclick="finishScan()">Finish Scanning</button>
 </section>
 
+  <section class="screen" id="manual">
+  <button class="back" onclick="show('animals')">← Back</button>
+
+  <div class="steps">
+    <div class="step on">1</div>
+    <div class="step on">2</div>
+    <div class="step">3</div>
+    <div class="step">4</div>
+    <div class="step">5</div>
+  </div>
+
+  <h1>Enter Animal Tags</h1>
+  <p>Enter one identification number for each animal.</p>
+
+  <div class="card">
+    <label><b>Animal tag / EID</b></label>
+    <input id="manualTag" type="text" placeholder="e.g. UK012345670001">
+  </div>
+
+  <div class="good" id="manualCount">
+    0 animal IDs entered.
+  </div>
+
+  <button class="primary" onclick="addManualTag()">Add animal ID</button>
+  <button class="secondary" onclick="finishManualTags()">Continue</button>
+</section>
+
 
 <section class="screen" id="destination">
 <button class="back" onclick="show('animals')">← Back</button>
@@ -392,34 +419,23 @@ function finishScan(){
 }
 
 function manualDemo(){
-  if (!state.count) state.count = 5;
+    if (!state.count) state.count = 5;
+    if (!state.eids) state.eids = [];
 
-  const demoEids = [
-    "UK012345670001",
-    "UK012345670002",
-    "UK012345670003",
-    "UK012345670004",
-    "UK012345670005"
-  ];
+    show("manual");
 
-  if (!state.eids) state.eids = [];
+    const input = document.getElementById("manualTag");
+    if (input) {
+        input.value = "";
+        setTimeout(() => input.focus(), 100);
+    }
 
-  if (state.eids.length < state.count) {
-    state.eids.push(demoEids[state.eids.length]);
-  }
-
-  message(
-    state.eids.length + " of " + state.count +
-    " animal IDs entered."
-  );
-
-  if (state.eids.length >= state.count) {
-    setTimeout(() => show("destination"), 600);
-} else {
-    setTimeout(() => show("animals"), 600);
+    const count = document.getElementById("manualCount");
+    if (count) {
+        count.textContent =
+            state.eids.length + " of " + state.count + " animal IDs entered";
+    }
 }
-}
-
 function flockDemo(){
  state.count=12;
  state.eids=Array.from({length:12},(_,i)=>"UK01234567"+String(i+1).padStart(4,"0"));
