@@ -436,6 +436,37 @@ function manualDemo(){
             state.eids.length + " of " + state.count + " animal IDs entered";
     }
 }
+
+  function addManualTag() {
+  const input = document.getElementById("manualTag");
+  const tag = input.value.trim();
+
+  if (!tag) {
+    message("Enter an animal ID first.");
+    return;
+  }
+
+  if (!state.eids) state.eids = [];
+
+  if (state.eids.includes(tag)) {
+    message("That animal ID has already been entered.");
+    return;
+  }
+
+  if (state.eids.length >= state.count) {
+    message("All animal IDs have already been entered.");
+    return;
+  }
+
+  state.eids.push(tag);
+  input.value = "";
+
+  const count = document.getElementById("manualCount");
+  count.textContent =
+    state.eids.length + " of " + state.count + " animal IDs entered";
+
+  input.focus();
+}
 function flockDemo(){
  state.count=12;
  state.eids=Array.from({length:12},(_,i)=>"UK01234567"+String(i+1).padStart(4,"0"));
