@@ -540,8 +540,12 @@ function escapeText(v){
       </style>
     </head>
     <body>
-      <h1>Livestock Movement Document</h1>
-      <div class="ref">${escapeText(m.ref || "")}</div>
+     <div style="border-bottom:3px solid #17783d;padding-bottom:18px;margin-bottom:22px">
+  <div style="font-size:14px;font-weight:bold;color:#17783d;letter-spacing:1px">STOCKMOVE</div>
+  <h1 style="margin:6px 0">Livestock Movement Document</h1>
+  <div style="font-size:14px;color:#667085">Digital livestock movement record</div>
+  <div class="ref">${escapeText(m.ref || "")}</div>
+</div>
 
       <h2>Movement details</h2>
       <div class="box">
