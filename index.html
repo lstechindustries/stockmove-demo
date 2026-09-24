@@ -315,7 +315,10 @@ p{color:var(--muted);line-height:1.45}
 <div id="toast" class="toast"></div>
 
 <script>
+
 let state={
+  departure:"Higher Farm",
+departureCPH:"12/345/6789",
  species:"Sheep",
  count:0,
  destination:"Exeter Livestock Centre",
@@ -549,8 +552,8 @@ function escapeText(v){
 
       <h2>Movement details</h2>
       <div class="box">
-        <b>Departure:</b> Higher Farm<br>
-        <b>Departure CPH:</b> 12/345/6789<br>
+        <b>Departure:</b> ${escapeText(m.departure || "Higher Farm")}<br>
+<b>Departure CPH:</b> ${escapeText(m.departureCPH || "12/345/6789")}<br>
         <b>Destination:</b> ${escapeText(m.destination || "")}<br>
         <b>Destination CPH:</b> ${escapeText(m.destinationCPH || "")}<br>
         <b>Date:</b> ${escapeText(m.date || "24 Sep 2026")}
