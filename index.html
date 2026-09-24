@@ -413,7 +413,11 @@ function manualDemo(){
     " animal IDs entered."
   );
 
-  setTimeout(() => show("destination"), 600);
+  if (state.eids.length >= state.count) {
+    setTimeout(() => show("destination"), 600);
+} else {
+    setTimeout(() => show("animals"), 600);
+}
 }
 
 function flockDemo(){
